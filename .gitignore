@@ -1,0 +1,15 @@
+setting.yaml
+bundle/
+*.csv
+*.json
+*.csv 
+*.csv#
+*.log.*
+*.log
+pypipet/mailing/
+pypipet/api/
+*__pycache__
+logs/
+tests/api/
+dist/
+build/

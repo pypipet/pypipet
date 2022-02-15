@@ -1,0 +1,519 @@
+db_setting:
+  db_type: postgres
+  stage: test
+  database_max_retries: 3
+  database_retry_timeout: 10
+  db_conn:
+    host: host
+    port: 5432
+    user: user
+    password: password
+    dbname: db
+  
+  tables:
+    category:
+      columns:
+      - name: id
+        type: integer
+        is_key: true
+      - name: category
+        type: string
+        string_len: 250
+        not_null: true
+      - name: parent
+        type: string
+        string_len: 250
+      - name: full_path
+        type: string
+      unique_constraint:  
+        - name: category_name  #unique unique_constraint name must unique in DB
+          cols: [category]
+    product:
+      columns:
+      - name: id
+        type: integer
+        is_key: true
+      - name: product_name
+        type: string
+        string_len: 500
+        not_null: true
+      - name: short_description
+        type: string
+      - name: brand
+        type: string
+        string_len: 250
+      - name: identifier
+        type: string
+        string_len: 50
+        not_null: true
+      - name: category_id
+        type: integer
+      - name: manufacture
+        type: string 
+        string_len: 250
+      index:
+      - cols: [identifier]
+        is_unique: true
+      foreign_key_constraint: 
+        category_id: category.id
+
+    front_shop:
+      columns:
+      - name: id
+        type: integer
+        is_key: true
+      - name: name
+        type: string
+        string_len: 200
+      - name: url
+        type: string
+        not_null: true
+      - name: provider
+        type: string
+        string_len: 250
+      unique_constraint:
+        - name: url
+          cols: [url]
+
+    variation:
+      columns:
+      - name: sku
+        type: string
+        string_len: 50
+        is_key: true
+      - name: description
+        type: string
+      - name: upc
+        type: string
+        string_len: 250
+      - name: din
+        type: string
+        string_len: 250
+      - name: size
+        type: string
+        string_len: 100
+      - name: color
+        type: string
+        string_len: 100
+      - name: weight
+        type: string
+        string_len: 100
+      - name: in_stock
+        type: integer
+      - name: images #images seperate with ',', first image as default
+        type: string
+      - name: product_id
+        type: integer
+        not_null: true
+      foreign_key_constraint: 
+        product_id: product.id
+      index:
+        - cols: [product_id]
+          is_unique: false
+
+    tax:
+      columns:
+      - name: id
+        type: integer
+        is_key: true
+      - name: name
+        type: string
+        string_len: 100
+      - name: country_code
+        type: string
+        string_len: 10
+      - name: state
+        type: string
+        string_len: 100
+      - name: default_rate
+        type: float
+        not_null: true
+      - name: parent_tax_id
+        type: integer
+      unique_constraint:
+        - name: name
+          cols: [name]
+
+    destination:
+      columns:
+      - name: id
+        type: integer
+        is_key: true
+      - name: destination_product_id  #e.g., product_id in woocommerc, shopify
+        type: string
+        string_len: 50
+      - name: destination_parent_id
+        string_len: 50
+        type: string
+      - name: inventory_item_id  #for shopify inventory management
+        string_len: 50
+        type: string
+      - name: price
+        type: float
+        not_null: true
+      - name: currency
+        type: string
+        string_len: 5
+      - name: discount
+        type: float
+      - name: is_current_price
+        type: bool
+        not_null: true
+      - name: note
+        type: string
+        string_len: 500
+      - name: sku
+        type: string
+        string_len: 50
+      - name: front_shop_id
+        type: integer
+      - name: msq  #minimal order quantity
+        type: integer
+      - name: available
+        type: bool
+      foreign_key_constraint: 
+        front_shop_id: front_shop.id
+        sku: variation.sku
+      index:
+        - cols: [sku, front_shop_id]
+          is_unique: false
+        - cols: [destination_product_id, front_shop_id]
+          is_unique: false
+
+    promotion: #optional table
+      columns:
+      - name: id
+        type: integer
+        is_key: true
+      - name: destination_id
+        type: integer 
+      - name: sale_price
+        type: float
+      - name: start_from
+        type: datetime
+      - name: end_at
+        type: datetime
+      - name: note
+        type: string
+        string_len: 500
+
+    product_group:
+      columns:
+      - name: id
+        type: integer
+        is_key: true
+      - name: group_name
+        type: string
+        string_len: 500
+      - name: destination_id
+        type: integer 
+      unique_constraint:
+        - name: group_name
+          cols: [group_name]
+      foreign_key_constraint: 
+        destination_id: destination.id
+
+    supplier:
+      columns:
+        - name: id
+          type: integer
+          is_key: true
+        - name: name
+          type: string
+          string_len: 250 
+        - name: note
+          type: string
+          not_null: true
+      unique_constraint:
+        - name: supplier_name
+          cols: [name]
+      
+    inventory:
+      columns:
+      - name: id
+        type: integer
+        is_key: true
+      - name: sku
+        type: string
+        string_len: 50
+      - name: upc
+        type: string
+        string_len: 50
+      - name: supplier_id
+        type: integer 
+      - name: qty
+        type: integer 
+        not_null: true
+      - name: supplier_item_id
+        type: string
+        string_len: 50
+      - name: cost
+        type: float
+      - name: currency
+        type: string
+        string_len: 5
+      unique_constraint:
+        - name: item_supply
+          cols: [supplier_item_id, supplier_id]
+      foreign_key_constraint: 
+        supplier_id: supplier.id
+      index:
+        - cols: [sku]
+          is_unique: false
+
+    customer:
+      columns:
+      - name: id
+        type: integer
+        is_key: true
+      - name: first_name
+        type: string
+        string_len: 100
+      - name: last_name
+        type: string
+        string_len: 100
+      - name: phone
+        type: string
+        string_len: 50
+      - name: email
+        type: string
+        string_len: 100
+      - name: address1
+        type: string
+        string_len: 500
+      - name: address2
+        type: string
+        string_len: 500
+      - name: country
+        type: string
+        string_len: 100
+      - name: country_code
+        type: string
+        string_len: 5
+      - name: state
+        type: string
+        string_len: 100
+      - name: city
+        type: string
+        string_len: 200
+      - name: postcode
+        type: string
+        string_len: 20
+      - name: company
+        type: string
+        string_len: 200
+      - name: is_shipping
+        type: bool
+      - name: is_billing
+        type: bool
+      
+    shop_order:
+      columns:
+      - name: id
+        type: integer
+        is_key: true
+      - name: destination_order_id
+        type: string
+        string_len: 50
+        not_null: true
+      - name: front_shop_id
+        type: integer
+        not_null: true
+      - name: status
+        type: string
+        string_len: 20
+        not_null: true
+      - name: billing_customer_id
+        type: integer
+      - name: shipping_customer_id
+        type: integer
+      - name: payment_type
+        type: string
+        string_len: 50
+      - name: payment_token
+        type: string
+        string_len: 50
+      - name: payment_processing_fee
+        type: float
+      - name: duties
+        type: float
+      - name: coupon
+        type: float
+      - name: refund
+        type: float
+      - name: shipping_cost
+        type: float
+      - name: shipping_tax
+        type: float
+      - name: shipping_tax_id
+        type: integer
+      - name: order_total
+        type: float
+      - name: order_at
+        type: datetime
+      - name: currency
+        type: string
+        string_len: 5
+      - name: note
+        type: string
+      - name: alias_name #shopify
+        type: string
+      - name: tax_total #shopify
+        type: float
+      foreign_key_constraint: 
+        billing_customer_id: customer.id
+        shipping_customer_id: customer.id
+        front_shop_id: front_shop.id
+        shipping_tax_id: tax.id
+      index:
+        - cols: [destination_order_id, front_shop_id]
+          is_unique: true
+      
+    order_item:
+      columns:
+      - name: id
+        type: integer
+        is_key: true
+      - name: shop_order_id
+        type: integer
+      - name: destination_id
+        type: integer
+        not_null: true
+      - name: destination_product_id
+        type: string
+        string_len: 50
+      - name: tax_id
+        type: integer
+      - name: total_tax
+        type: float
+      - name: order_qty
+        type: integer
+        not_null: true
+      - name: ship_qty
+        type: integer
+        not_null: true
+      - name: price
+        type: float
+        not_null: true
+      - name: sku
+        type: string
+        string_len: 50
+      foreign_key_constraint: 
+        shop_order_id: shop_order.id
+        destination_id: destination.id
+        tax_id: tax.id
+
+    fulfillment:
+      columns:
+      - name: id
+        type: integer
+        is_key: true
+      - name: provider
+        type: string
+        string_len: 100
+      - name: status
+        type: string
+        string_len: 50
+      - name: dimension
+        type: string
+        string_len: 100
+      - name: weight
+        type: string
+        string_len: 100
+      - name: tracking_id
+        type: string
+        string_len: 100
+      - name: shop_order_id
+        type: integer
+      - name: destination_order_id
+        type: string
+        string_len: 50
+      - name: note
+        type: string
+      foreign_key_constraint: 
+        shop_order_id: shop_order.id
+      unique_constraint:
+      - cols:
+        - shop_order_id
+        - provider
+        - tracking_id
+        name: order_tracking
+
+    customer_service:
+      columns:
+      - name: id
+        type: integer
+        is_key: true
+      - name: customer_id
+        type: integer
+      - name: shop_order_id
+        type: integer
+      - name: issue
+        type: string
+      - name: response
+        type: string
+      foreign_key_constraint: 
+        shop_order_id: shop_order.id
+        customer_id: customer.id
+      
+    supplier_invoice:
+      columns:
+      - name: id
+        type: integer
+        is_key: true
+      - name: name
+        type: string
+        string_len: 300
+      - name: supplier_id
+        type: integer
+      - name: supplier_item_id
+        type: string
+        string_len: 50
+      - name: cost
+        type: float
+      - name: invoice_no
+        type: string
+        string_len: 50
+      - name: supplier_order_no
+        type: string
+        string_len: 50
+      - name: qty
+        type: integer
+      - name: tax_id
+        type: integer
+      - name: order_at
+        type: datetime
+      - name: sku
+        type: string
+        string_len: 50
+      - name: currency
+        type: string
+        string_len: 5
+      unique_constraint:
+        - name: item_invoice
+          cols: [invoice_no, supplier_item_id,supplier_id,supplier_order_no]
+      foreign_key_constraint: 
+        supplier_id: supplier.id
+        tax_id: tax.id
+
+manual_data_input:
+  front_shop:
+    - url: 'https://myshop.ca'
+      provider: woocommerce
+      name: wp
+  tax:
+    - name: US_flat
+      country_code: US
+      default_rate: 0
+    - name: US_shipping_flat
+      country_code: US
+      default_rate: 0
+    - name: CA_gst
+      country_code: CA
+      default_rate: 0.05
+    - name: CA_no_gst
+      country_code: CA
+      default_rate: 0.0
+  supplier:
+    - name: default
+      note: location1

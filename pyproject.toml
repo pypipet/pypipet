@@ -1,0 +1,49 @@
+[tool.poetry]
+name = "pypipet"
+version = "0.1"
+description = "pypipet"
+authors = ["pypipet and contributors <pypipet@gmail.com>"]
+
+license = "MIT"
+readme = "README.md"
+
+keywords = ["ecommerce", "retail", 
+           "woocomerce", "shopify", 
+           "product catalog",
+           "data pipeline"]
+
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+]
+include = [
+    "LICENSE",
+]
+
+exclude = ["tests/","bundle/", "logs/", "setting.yaml", "*.log",
+            ".dokerignore", "setup.py", "pypipet/api/"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+click = "^8.0"
+pyyaml = "^5.3.1"
+requests = "^2.23.0"
+sqlalchemy = "^1.4.27"
+pandas = "^1.2.0"
+Jinja2 = "^3.0.3"
+Flask = "^2.0.2"
+pyactiveresource = "^2.2.2"
+ShopifyAPI = "^10.0.0"
+
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+requests-mock = "^1.6.0"
+
+[tool.poetry.scripts]
+pypipet = 'pypipet.cli:cli'
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

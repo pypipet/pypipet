@@ -1,0 +1,35 @@
+project_setting:
+  name: name
+  home_dir: './'
+  databse_setting: bundle/db_setting.yaml
+  wc_field_mapping: bundle/wc_field_mapping.yaml
+  spf_field_mapping: bundle/spf_field_mapping.yaml
+  file_template: bundle/file_template.yaml
+  default_brand: 'NA'
+  attr_list: ['brand', 'upc', 'size', 'color']
+  variation_attrs: ['color']
+  shops:
+    home_site:
+      site_type: wc
+      url: 'https://'
+      consumer_key: ck_45b6
+      consumer_secret: cs_fb1671aaf
+      version: 'wc/v3'
+      no_of_retries:  3
+      batch_size: 50
+    test_site:
+      site_type: wc
+      url: 'https://'
+      consumer_key: ck_45b6
+      consumer_secret: cs_fb1671aaf
+      version: 'wc/v3'
+      no_of_retries:  3
+      batch_size: 50
+    spf_site:
+      site_type: shopify
+      API_KEY: c341c45635623463
+      API_SECRET: shpss_1caer345ersfar14c0
+      private_app_password: shppa_3fddgf3453efasdwe5dgasetadfae
+      access_token: iiuweuty94t7 # non-private app
+      shop_url: test_shop.myshopify.com
+      api_version: 2022-01

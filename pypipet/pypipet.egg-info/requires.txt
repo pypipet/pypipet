@@ -1,0 +1,5 @@
+click
+sqlalchemy
+pandas
+PyYAML
+requests

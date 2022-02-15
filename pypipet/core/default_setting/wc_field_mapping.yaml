@@ -1,0 +1,146 @@
+version: woocommerce version 5.5.2
+mapping:
+  shop_order:
+    id: 
+      map_to: destination_order_id
+      data_type: string
+    status: status
+    payment_method: payment_type
+    transaction_id: payment_token
+    shipping_total: 
+      map_to: shipping_cost
+      data_type: float
+    total: 
+      map_to: order_total
+      data_type: float
+    shipping_tax: 
+      map_to: shipping_tax
+      data_type: float
+    date_created_gmt: order_at
+    currency: currency
+    discount_total: 
+      map_to: coupon
+      data_type: float
+    meta_data:
+      - map_from: value
+        map_to: payment_processing_fee
+        condition: 
+          key: _paypal_transaction_fee
+    refunds:
+      - map_from: total
+        map_to: refund
+        sum: total
+  order_item:
+    product_id: 
+      map_to: destination_product_id
+      data_type: string
+    quantity: 
+      map_to: order_qty
+      data_type: integer
+    price: price
+    total_tax: 
+      map_to: total_tax
+      data_type: float
+    sku: 
+      map_to: sku
+      data_type: string
+  customer:
+    first_name: first_name
+    last_name: last_name
+    address_1: address1
+    address_2: address2
+    country: country
+    state: state
+    city: city
+    postcode: postcode
+    company: company
+    email: email
+    phone: phone 
+  product:
+    attributes: 
+      - map_from: options
+        map_to: brand
+        condition: 
+          name: brand
+    categories: 
+      - map_from: name
+        map_to: category
+        index: 0
+    id: 
+      map_to: identifier
+      data_type: string
+    name: product_name
+    short_description: short_description
+  variation:
+    attributes: #[brand, upc, size]
+      - map_from: options
+        map_to: brand
+        condition: 
+          name: brand
+      - map_from: options
+        map_to: upc
+        condition: 
+          name: upc
+      - map_from: options
+        map_to: size
+        condition: 
+          name: Size
+      - map_from: options
+        map_to: color
+        condition: 
+          name: color
+    images: 
+      - map_from: src
+        map_to: images
+        merge: ','
+    sku: 
+      map_to: sku
+      data_type: string
+    weight: 
+      map_to: weight
+      data_type: float
+    description: description
+    stock_quantity: 
+      map_to: in_stock 
+      data_type: integer
+  variation_attrs:
+    attributes: #[brand, upc, size]
+      - map_from: option
+        map_to: color
+        condition: 
+          name: color
+      - map_from: option
+        map_to: size
+        condition: 
+          name: size
+    images: 
+      - map_from: src
+        map_to: images
+        merge: ','
+    sku: 
+      map_to: sku
+      data_type: string
+    weight: 
+      map_to: weight
+      data_type: float
+    description: description
+    stock_quantity: 
+      map_to: in_stock 
+      data_type: integer
+  destination:
+    id: 
+      map_to: destination_product_id
+      data_type: string
+    status: 
+      map_to: available  #"draft, pending, private and publish."
+      data_type: boolean
+      data_value: publish
+    price: 
+      map_to: price
+      data_type: float
+    sku: 
+      map_to: sku
+      data_type: string
+  inventory:
+    stock_quantity: qty
+    sku: sku

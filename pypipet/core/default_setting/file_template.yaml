@@ -1,0 +1,90 @@
+version: csv
+catalog:
+  product:
+    - category
+    - product_name
+    - brand
+    - short_description
+    - identifier
+  variation:
+    - sku
+    - upc
+    - size
+    - weight
+    - description
+    - color
+    - in_stock
+    - images
+product_info:
+  product:
+    - category
+    - product_name
+    - brand
+    - short_description
+    - identifier
+  variation:
+    - sku
+    - upc
+    - size
+    - weight
+    - description
+    - color
+    - in_stock
+    - images
+  destination:
+    - destination_product_id
+    - price
+    - currency
+    - discount
+    - note
+product_update:
+  product:
+    - id
+    - category
+    - product_name
+    - brand
+    - short_description
+    - identifier
+  variation:
+    - sku
+    - upc
+    - size
+    - weight
+    - description
+    - color
+    - in_stock
+    - images
+  destination:
+    - price
+    - discount
+    - available
+inventory:
+  - sku
+  - qty
+  - upc
+  - cost
+  - currency
+  - supplier_id
+  - supplier_item_id
+fulfillment:
+  - destination_order_id
+  - front_shop_id
+  - provider
+  - tracking_id
+supplier:
+  - name
+  - note 
+front_shop:
+  - name
+  - url
+  - provider
+tax:
+  - name 
+  - country_code
+  - state
+  - default_rate
+  - parent_tax_id
+category:
+  - category
+  - parent
+  - full_path
