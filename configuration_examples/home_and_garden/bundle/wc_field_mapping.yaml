@@ -1,0 +1,108 @@
+mapping:
+  customer:
+    address_1: address1
+    address_2: address2
+    city: city
+    company: company
+    country: country
+    email: email
+    first_name: first_name
+    last_name: last_name
+    phone: phone
+    postcode: postcode
+    state: state
+  destination:
+    id:
+      data_type: string
+      map_to: destination_product_id
+    price:
+      data_type: float
+      map_to: price
+    sku:
+      data_type: string
+      map_to: sku
+    status:
+      data_type: boolean
+      data_value: publish
+      map_to: available
+  inventory:
+    sku: sku
+    stock_quantity: qty
+  order_item:
+    price: price
+    product_id:
+      data_type: string
+      map_to: destination_product_id
+    quantity:
+      data_type: integer
+      map_to: order_qty
+    sku:
+      data_type: string
+      map_to: sku
+    total_tax:
+      data_type: float
+      map_to: total_tax
+  product:
+    attributes:
+    - condition:
+        name: Brand
+      map_from: options
+      map_to: brand
+    categories:
+    - index: 0
+      map_from: name
+      map_to: category
+    name: product_name
+    short_description: short_description
+  shop_order:
+    coupon_lines:
+    - map_from: discount
+      map_to: coupon
+      sum: amount
+    currency: currency
+    date_created_gmt: order_at
+    id:
+      data_type: string
+      map_to: destination_order_id
+    meta_data:
+    - condition:
+        key: _paypal_transaction_fee
+      map_from: value
+      map_to: payment_processing_fee
+    payment_method: payment_type
+    shipping_tax:
+      data_type: float
+      map_to: shipping_tax
+    shipping_total: shipping_cost
+    status: status
+    total: order_total
+    transaction_id: payment_token
+  variation:
+    attributes:
+    - condition:
+        name: brand
+      map_from: options
+      map_to: brand
+    - condition:
+        name: UPC
+      map_from: options
+      map_to: upc
+    - condition:
+        name: Size
+      map_from: options
+      map_to: size
+    - condition:
+        name: color
+      map_from: options
+      map_to: color
+    description: description
+    images:
+    - map_from: src
+      map_to: images
+      merge: ','
+    sku:
+      data_type: string
+      map_to: sku
+    stock_quantity: in_stock
+    weight: weight
+version: woocommerce version 5.5.2

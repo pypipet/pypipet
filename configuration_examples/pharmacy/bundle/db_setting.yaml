@@ -1,0 +1,518 @@
+db_setting:
+  database_max_retries: 3
+  database_retry_timeout: 10
+  db_conn:
+    host: xxxxxxxxxx.rds.amazonaws.com
+    port: 5432
+    user: user
+    password: 3333
+    dbname: dbname
+  db_type: postgres
+  stage: test
+  tables:
+    category:
+      columns:
+      - is_key: true
+        name: id
+        type: integer
+      - name: category
+        not_null: true
+        string_len: 250
+        type: string
+      - name: parent
+        string_len: 250
+        type: string
+      - name: full_path
+        type: string
+      unique_constraint:
+      - cols:
+        - category
+        name: category_name
+    customer:
+      columns:
+      - is_key: true
+        name: id
+        type: integer
+      - name: first_name
+        string_len: 100
+        type: string
+      - name: last_name
+        string_len: 100
+        type: string
+      - name: phone
+        string_len: 50
+        type: string
+      - name: email
+        string_len: 100
+        type: string
+      - name: address1
+        string_len: 500
+        type: string
+      - name: address2
+        string_len: 500
+        type: string
+      - name: country
+        string_len: 100
+        type: string
+      - name: country_code
+        string_len: 5
+        type: string
+      - name: state
+        string_len: 100
+        type: string
+      - name: city
+        string_len: 200
+        type: string
+      - name: postcode
+        string_len: 20
+        type: string
+      - name: company
+        string_len: 200
+        type: string
+      - name: is_shipping
+        type: bool
+      - name: is_billing
+        type: bool
+      unique_constraint:
+      - cols:
+        - email
+        name: email
+    customer_service:
+      columns:
+      - is_key: true
+        name: id
+        type: integer
+      - name: customer_id
+        type: integer
+      - name: shop_order_id
+        type: integer
+      - name: issue
+        type: string
+      - name: response
+        type: string
+      foreign_key_constraint:
+        customer_id: customer.id
+        shop_order_id: shop_order.id
+    destination:
+      columns:
+      - is_key: true
+        name: id
+        type: integer
+      - name: destination_product_id
+        string_len: 50
+        type: string
+      - name: destination_parent_id
+        string_len: 50
+        type: string
+      - name: inventory_item_id  #for shopify inventory management
+        string_len: 50
+        type: string
+      - name: price
+        not_null: true
+        type: float
+      - name: currency
+        string_len: 5
+        type: string
+      - name: discount
+        type: float
+      - name: is_current_price
+        not_null: true
+        type: bool
+      - name: note
+        string_len: 500
+        type: string
+      - name: sku
+        string_len: 50
+        type: string
+      - name: front_shop_id
+        type: integer
+      - name: msq
+        type: integer
+      - name: available
+        type: bool
+      foreign_key_constraint:
+        front_shop_id: front_shop.id
+        sku: variation.sku
+      index:
+      - cols:
+        - sku
+        - front_shop_id
+        is_unique: false
+      - cols:
+        - destination_product_id
+        - front_shop_id
+        is_unique: false
+    front_shop:
+      columns:
+      - is_key: true
+        name: id
+        type: integer
+      - name: name
+        string_len: 200
+        type: string
+      - name: url
+        not_null: true
+        type: string
+      - name: provider
+        string_len: 250
+        type: string
+      unique_constraint:
+      - cols:
+        - url
+        name: url
+    fulfillment:
+      columns:
+      - is_key: true
+        name: id
+        type: integer
+      - name: provider
+        string_len: 100
+        type: string
+      - name: status
+        string_len: 50
+        type: string
+      - name: dimension
+        string_len: 100
+        type: string
+      - name: weight
+        string_len: 100
+        type: string
+      - name: tracking_id
+        string_len: 100
+        type: string
+      - name: shop_order_id
+        type: integer
+      - name: destination_order_id
+        string_len: 50
+        type: string
+      - name: note
+        type: string
+      foreign_key_constraint:
+        shop_order_id: shop_order.id
+    inventory:
+      columns:
+      - is_key: true
+        name: id
+        type: integer
+      - name: sku
+        string_len: 50
+        type: string
+      - name: upc
+        string_len: 50
+        type: string
+      - name: supplier_id
+        type: integer
+      - name: qty
+        not_null: true
+        type: integer
+      - name: supplier_item_id
+        string_len: 50
+        type: string
+      - name: cost
+        type: float
+      - name: currency
+        string_len: 5
+        type: string
+      foreign_key_constraint:
+        supplier_id: supplier.id
+      unique_constraint:
+      - cols:
+        - supplier_item_id
+        - supplier_id
+        name: item_supply
+    order_item:
+      columns:
+      - is_key: true
+        name: id
+        type: integer
+      - name: shop_order_id
+        type: integer
+      - name: destination_id
+        not_null: true
+        type: integer
+      - name: destination_product_id
+        string_len: 50
+        type: string
+      - name: tax_id
+        type: integer
+      - name: total_tax
+        type: float
+      - name: order_qty
+        not_null: true
+        type: integer
+      - name: ship_qty
+        not_null: true
+        type: integer
+      - name: price
+        not_null: true
+        type: float
+      - name: sku
+        string_len: 50
+        type: string
+      foreign_key_constraint:
+        destination_id: destination.id
+        shop_order_id: shop_order.id
+        tax_id: tax.id
+    product:
+      columns:
+      - is_key: true
+        name: id
+        type: integer
+      - name: identifier
+        type: string
+        string_len: 50
+      - name: product_name
+        not_null: true
+        string_len: 500
+        type: string
+      - name: short_description
+        not_null: true
+        type: string
+      - name: brand
+        string_len: 250
+        type: string
+      - name: category_id
+        type: integer
+      index:
+      - cols: [identifier]
+        is_unique: true
+      foreign_key_constraint: 
+        category_id: category.id
+    product_group:
+      columns:
+      - is_key: true
+        name: id
+        type: integer
+      - name: group_name
+        string_len: 500
+        type: string
+      - name: destination_id
+        type: integer
+      foreign_key_constraint:
+        destination_id: destination.id
+      unique_constraint:
+      - cols:
+        - group_name
+        name: group_name
+    promotion:
+      columns:
+      - is_key: true
+        name: id
+        type: integer
+      - name: destination_id
+        type: integer
+      - name: sale_price
+        type: float
+      - name: start_from
+        type: datetime
+      - name: end_at
+        type: datetime
+      - name: note
+        string_len: 500
+        type: string
+    shop_order:
+      columns:
+      - is_key: true
+        name: id
+        type: integer
+      - name: destination_order_id
+        not_null: true
+        string_len: 50
+        type: string
+      - name: front_shop_id
+        not_null: true
+        type: integer
+      - name: status
+        not_null: true
+        string_len: 20
+        type: string
+      - name: billing_customer_id
+        type: integer
+      - name: shipping_customer_id
+        type: integer
+      - name: payment_type
+        string_len: 50
+        type: string
+      - name: payment_token
+        string_len: 50
+        type: string
+      - name: payment_processing_fee
+        type: float
+      - name: duties
+        type: float
+      - name: coupon
+        type: float
+      - name: refund
+        type: float
+      - name: shipping_cost
+        type: float
+      - name: shipping_tax_id
+        type: integer
+      - name: shipping_tax
+        type: float
+      - name: order_total
+        type: float
+      - name: order_at
+        type: datetime
+      - name: currency
+        string_len: 5
+        type: string
+      - name: note
+        type: string
+      - name: alias_name #shopify
+        type: string
+      - name: tax_total #shopify
+        type: float
+      foreign_key_constraint:
+        billing_customer_id: customer.id
+        front_shop_id: front_shop.id
+        shipping_customer_id: customer.id
+        shipping_tax_id: tax.id
+      index:
+      - cols:
+        - destination_order_id
+        - front_shop_id
+        is_unique: true
+    supplier:
+      columns:
+      - is_key: true
+        name: id
+        type: integer
+      - name: name
+        string_len: 250
+        type: string
+      - name: note
+        not_null: true
+        type: string
+      unique_constraint:
+      - cols:
+        - name
+        name: supplier_name
+    supplier_invoice:
+      columns:
+      - is_key: true
+        name: id
+        type: integer
+      - name: name
+        string_len: 300
+        type: string
+      - name: supplier_id
+        type: integer
+      - name: supplier_item_id
+        string_len: 50
+        type: string
+      - name: cost
+        type: float
+      - name: invoice_no
+        string_len: 50
+        type: string
+      - name: supplier_order_no
+        string_len: 50
+        type: string
+      - name: qty
+        type: integer
+      - name: tax_id
+        type: integer
+      - name: order_at
+        type: datetime
+      - name: sku
+        string_len: 50
+        type: string
+      - name: currency
+        string_len: 5
+        type: string
+      foreign_key_constraint:
+        supplier_id: supplier.id
+        tax_id: tax.id
+      unique_constraint:
+      - cols:
+        - invoice_no
+        - supplier_item_id
+        - supplier_id
+        - supplier_order_no
+        name: item_invoice
+    tax:
+      columns:
+      - is_key: true
+        name: id
+        type: integer
+      - name: name
+        string_len: 100
+        type: string
+      - name: country_code
+        string_len: 10
+        type: string
+      - name: state
+        string_len: 100
+        type: string
+      - name: default_rate
+        not_null: true
+        type: float
+      - name: parent_tax_id
+        type: integer
+      unique_constraint:
+      - cols:
+        - name
+        name: name
+    variation:
+      columns:
+      - is_key: true
+        name: sku
+        string_len: 50
+        type: string
+      - name: description
+        type: string
+      - name: upc
+        string_len: 250
+        type: string
+      - name: din
+        string_len: 250
+        type: string
+      - name: size
+        string_len: 100
+        type: string
+      - name: color
+        string_len: 100
+        type: string
+      - name: weight
+        string_len: 100
+        type: string
+      - name: in_stock
+        type: integer
+      - name: images
+        type: string
+      - name: product_id
+        not_null: true
+        type: integer
+      foreign_key_constraint:
+        product_id: product.id
+      index:
+      - cols:
+        - product_id
+        is_unique: false
+      - cols:
+        - upc
+        is_unique: true
+manual_data_input:
+  front_shop:
+  - name: wp
+    provider: woocommerce
+    url: https://xxxxx.com
+  supplier:
+  - name: a
+    note: a warehouse
+  - name: b
+    note: b warehouse
+  tax:
+  - country_code: US
+    name: US_flat
+    default_rate: 0
+  - country_code: US
+    name: US_shipping_flat
+    default_rate: 0
+  - country_code: CA
+    name: CA_gst
+    default_rate: 0.05
+  - country_code: CA
+    name: CA_no_gst
+    default_rate: 0.0

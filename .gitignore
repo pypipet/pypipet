@@ -1,5 +1,3 @@
-setting.yaml
-bundle/
 *.csv
 *.json
 *.csv 
@@ -13,3 +11,4 @@ logs/
 tests/api/
 dist/
 build/
+*.pyc

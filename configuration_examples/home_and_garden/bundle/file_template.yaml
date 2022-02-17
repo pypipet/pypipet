@@ -1,0 +1,89 @@
+category:
+- category
+- parent
+- full_path
+front_shop:
+- name
+- url
+- provider
+fulfillment:
+- destination_order_id
+- front_shop_id
+- provider
+- tracking_id
+inventory:
+- sku
+- qty
+- unit_price
+- fulfillment_cost
+- cost
+- currency
+- supplier_id
+- supplier_item_id
+- return_rate_level
+- return_approve_rate_level
+- currency
+product_info:
+  destination:
+  - destination_product_id
+  - destination_variation_id
+  - price
+  - currency
+  - discount
+  - note
+  product:
+  - category
+  - product_name
+  - brand
+  - short_description
+  - identifier
+  - manufacture
+  - manufacture_code
+  variation:
+  - sku
+  - description
+  - in_stock
+  - images
+  - mpn
+  - length
+  - width
+  - height
+  - weight
+  - color
+  - is_combo
+  - is_customized
+  - is_oversized
+  - origin
+  - material
+  - is_battery
+  - assembled_length
+  - assembled_width
+  - assembled_height
+  - assembled_weight
+  - package_qty
+product_update:
+  destination:
+  - price
+  - discount
+  - available
+  product:
+  - id
+  - identifier
+  - category
+  - product_name
+  - short_description
+  variation:
+  - sku
+  - description
+  - in_stock
+  - images
+supplier:
+- name
+- note
+tax:
+- name
+- country_code
+- state
+- rate
+- parent_tax_id
+version: csv

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pypipet"
-version = "0.1"
+version = "1.0.0"
 description = "pypipet"
 authors = ["pypipet and contributors <pypipet@gmail.com>"]
 

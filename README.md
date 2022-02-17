@@ -12,7 +12,7 @@
 
 **`PyPipet`** is an open source project, aiming to integrate data flows of Ecommerce. It provides platform-independent data flows to support Ecommerce functionality. It simplifies data pipelines of data management in ecommerce, for example, adding catalog, updating product, managing inventory and orders, etc. It is specially customized for small business who are selling on wordpress (for example, with woocommerce), shopify, ebay, etc. (more frontshop connected will be added). It extremely handy if the business is selling on multiple platforms (e.g., for dropshipping). It makes it extreamly easy to move your frontshop from one platform to anothor.
 
-* For source code,  visit  [github repositoty](https://github.com/pypipet/pypipet).
+* For source code,  visit  [github repository](https://github.com/pypipet/pypipet).
 * For documentation, vist [docs](https://pypipet.com)
 
 ## Latest `pip` version: 1.0.0

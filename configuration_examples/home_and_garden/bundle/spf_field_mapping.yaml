@@ -1,0 +1,120 @@
+version: shpify version 2022-01
+mapping:
+  shop_order:
+    id: 
+      map_to: destination_order_id
+      data_type: string
+    financial_status: status
+    gateway: payment_type
+    checkout_token: payment_token
+    shipping_lines: 
+      - map_from: price
+        map_to: shipping_cost
+        sum: total
+    current_total_price: 
+      map_to: order_total
+      data_type: float
+    created_at: order_at
+    currency: currency
+    current_total_discounts: 
+      map_to: coupon
+      data_type: float
+    refunds:
+      - map_from: amount
+        map_to: refund
+        sum: total
+    note: note
+    current_total_tax: 
+      map_to: tax_total
+      data_type: float
+    name: alias_name
+  order_item:
+    variant_id: 
+      map_to: destination_product_id
+      data_type: string
+    quantity: 
+      map_to: order_qty
+      data_type: integer
+    price: price
+    tax_lines: 
+      - map_from: price
+        map_to: total_tax
+        sum: total
+    sku: 
+      map_to: sku
+      data_type: string
+  customer:
+    first_name: first_name
+    last_name: last_name
+    address1: address1
+    address2: address2
+    country: country
+    province: state
+    city: city
+    zip: postcode
+    company: company
+    email: email
+    phone: phone 
+  fulfillment:
+    status: status
+    tracking_company: provider
+    tracking_numbers: tracking_id
+  product:
+    vendor: brand
+    product_type: category
+    id: 
+      map_to: identifier
+      data_type: string
+    title: product_name
+    # short_description: short_description
+  variation:
+    images: 
+      - map_from: src
+        map_to: images
+        merge: ','
+    sku: 
+      map_to: sku
+      data_type: string
+    weight: 
+      map_to: weight
+      data_type: float
+    title: description
+    inventory_quantity: 
+      map_to: in_stock 
+      data_type: integer
+    barcode:
+      map_to: upc
+      data_type: string
+    meta: 
+      - map_from: value
+        map_to: upc
+        condition: 
+          key: upc
+      - map_from: value
+        map_to: material
+        condition: 
+          key: material
+  destination:
+    id: 
+      map_to: destination_product_id
+      data_type: string
+    parent_id:
+      map_to: destination_parent_id
+      data_type: string
+    inventory_item_id:
+      map_to: inventory_item_id
+      data_type: string
+    price: 
+      map_to: price
+      data_type: float
+    sku: 
+      map_to: sku
+      data_type: string
+    compare_at_price: 
+      map_to: discount
+      data_type: float
+  inventory:
+    stock_quantity: qty
+    sku: sku
+  
+

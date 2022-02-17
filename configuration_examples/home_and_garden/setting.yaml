@@ -1,0 +1,30 @@
+project_setting:
+  attr_list:
+  - brand
+  - mpn
+  - color
+  - is_combo
+  - is_customized
+  - is_oversized
+  - origin
+  - material
+  - is_battery
+  - package_qty
+  databse_setting: bundle/db_setting.yaml
+  default_brand: 'Brand'
+  file_template: bundle/file_template.yaml
+  home_dir: ./
+  name: project_name
+  variation_attrs:
+    - color
+    - material
+  shops:
+    home_site:
+      batch_size: 50
+      consumer_key: ck_0469c247f6078f3
+      consumer_secret: cs_7f8ec80ad68945a2
+      no_of_retries: 3
+      site_type: wc
+      url: https://xxxxx.com
+      version: wc/v3
+  wc_field_mapping: bundle/wc_field_mapping.yaml

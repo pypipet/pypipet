@@ -34,7 +34,7 @@ def test_import_order_by_id(session, shop_conn, obj_classes):
     add_order_to_db(obj_classes, session, order_obj, shop_conn.front_shop_id)
 
 def test_update_customer(session, obj_classes, shop_conn):
-    update = {'email': 'Bdom@aidom.ca',  'postcode': 'v8j 4v7'}
+    update = {'email': 'Bdom@abc.ca',  'postcode': 'v8j 4v7'}
     order = get_order_info(obj_classes, session, 
                                  {'destination_order_id':'4296601993386', 
                                    'front_shop_id':shop_conn.front_shop_id})

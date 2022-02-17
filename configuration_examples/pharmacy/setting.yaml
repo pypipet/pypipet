@@ -1,0 +1,26 @@
+project_setting:
+  databse_setting: bundle/db_setting.yaml
+  file_template: bundle/file_template.yaml
+  home_dir: ./
+  name: new_proj
+  default_brand: NA
+  plugins:
+    woocommerce:
+    - consumer_key: ck_45b6
+      consumer_secret: cs_fb1671aaf
+      no_of_retries: 3
+      site_name: wp
+      url: https://
+      version: wc/v3
+      batch_size: 50
+  shops:
+    wp:
+      site_type: wc
+      url: 'https://xxxx.ccom/'
+      consumer_key: ck_45350ca171da69d32f0ae
+      consumer_secret: cs_fb166d54cad
+      version: 'wc/v3'
+      no_of_retries:  3
+      batch_size: 50
+  wc_field_mapping: bundle/wc_field_mapping.yaml
+

@@ -19,7 +19,7 @@ variants =[{
     'qty': 10,
     'attributes': {'color': 'red', 'size': '8', 
              'is_package': True, 'has_battery': True},
-    'images': 'https://i0.wp.com/ctchealth.ca/wp-content/uploads/2021/11/163985.jpg?fit=633%2C1024&ssl=1'
+    'images': 'https://i0.wp.com/health.ca/wp-content/uploads/2021/11/163985.jpg?fit=633%2C1024&ssl=1'
 
 },
 {
@@ -32,7 +32,7 @@ variants =[{
     'qty': 19,
     'attributes': {'color': 'black', 'size': '10', 
              'is_package': False, 'has_battery': False},
-    'images': 'https://i0.wp.com/ctchealth.ca/wp-content/uploads/2021/04/77731334-1.jpg?fit=960%2C960&ssl=1'
+    'images': 'https://i0.wp.com/health.ca/wp-content/uploads/2021/04/77731334-1.jpg?fit=960%2C960&ssl=1'
 
 }
 ]
@@ -57,7 +57,7 @@ extra_variant = {
     'price': 39,
     'attributes': {'color': 'black-white', 'size': '6', 
              'is_package': False, 'has_battery': False},
-    'images': 'https://i0.wp.com/ctchealth.ca/wp-content/uploads/2021/04/166535216-1.png?w=403&ssl=1'
+    'images': 'https://i0.wp.com/health.ca/wp-content/uploads/2021/04/166535216-1.png?w=403&ssl=1'
 }
 
 ff_info ={"location_id":66061795498,

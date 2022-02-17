@@ -1,0 +1,51 @@
+version: csv
+product_info:
+  product:
+    - category
+    - product_name
+    - brand
+    - short_description
+  variation:
+    - sku
+    - upc
+    - size
+    - weight
+    - description
+    - color
+    - in_stock
+    - images
+  destination:
+    - destination_shop_name
+    - destination_product_id
+    - price
+    - currency
+    - discount
+    - note
+product_update:
+  product:
+    - id
+    - category
+    - product_name
+    - brand
+    - short_description
+  variation:
+    - sku
+    - upc
+    - size
+    - weight
+    - description
+    - color
+    - in_stock
+    - images
+  destination:
+    - price
+    - discount
+    - available
+inventory:
+  - sku
+  - qty
+  - upc
+  - cost
+  - currency
+  - supplier_id
+  - supplier_item_id
