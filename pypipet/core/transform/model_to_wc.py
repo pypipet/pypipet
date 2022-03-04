@@ -59,9 +59,9 @@ def parse_to_wp_product_variable(shop_api, product_info: dict, attr_list,
             vari['description'] = f"sku {vari['sku']} {vari['sub_title']}"
             del vari['sub_title']
 
-    
+    parent_product['images'] = all_images
     if _DEBUG_: parent_product['images'] = all_images[:2]
-
+    
     if parent_id is None and not parse_to_wp_product(shop_api, parent_product, 
                                           attr_list, product_type='variable', 
                                           update_only=False, is_variation=False):

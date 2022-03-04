@@ -2,36 +2,65 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import inspect, text, Table,DateTime
 from sqlalchemy.sql import func
+from sqlalchemy import MetaData
 import datetime, logging
 from .base import *
 import logging
 logger = logging.getLogger('__default__')
 
-def init_tables(engine, table_settings:dict):
-    base = declarative_base()
+def init_tables(engine, table_settings:dict, schema=None):
+    base = None 
+    if schema is None:
+        base = declarative_base()
+    else:
+        logger.debug(f'db operation on schema {schema}')
+        base = declarative_base(metadata=MetaData(schema=schema))
     base.metadata.reflect(engine)
-
+    
     for name, config in table_settings.items():
-        if base.metadata.tables.get(name) is None:
-            logging.debug(f"Creating table {name}")
+        search_name = name
+        if schema is not None:
+            search_name = f'{schema}.{name}'
+        if base.metadata.tables.get(search_name) is None:
+            # logging.debug(f"Creating table {name}")
             table = create_table(name, config, base.metadata)
-            logging.debug(f'created table {name}')
-
+           
     base.metadata.create_all(engine)
 
-def drop_all_tables(table_settings, engine):
+def drop_all_tables(table_settings, engine, schema=None):
     #quickly drop tables in dev
-    base = declarative_base()
+    base = None 
+    if schema is None:
+        base = declarative_base()
+    else:
+        logger.debug(f'db operation on schema {schema}')
+        base = declarative_base(metadata=MetaData(schema=schema))
     base.metadata.reflect(engine)
     tables = []
     for name, config in table_settings.items():
+        if schema is not None:
+            name = f'{schema}.{name}'
         table = base.metadata.tables.get(name)
         if table is not None:
             tables.append(table)
-
-    for i in range(1, len(tables)+1):
-        table = tables[-i]
-        table.drop(engine)
+    
+    i = 0
+    table = tables[i]
+    from random import randrange
+    while True:
+        try:
+            table.drop(engine)
+            logger.debug(f"drop {table}, len {len(tables)}")
+            tables.pop(i)
+        except:
+            pass
+        if len(tables) == 0:
+            break
+        i = randrange(len(tables))
+        table = tables[i]
+        
+        
+   
     return tables
 
 

@@ -178,7 +178,8 @@ def add_new_product(table_objs, session, product: object):
     return product
 
 def get_product_with_variations(table_objs, session, params: dict, 
-                                       include_published=False, front_shop_id=None, include_category=False):
+                include_published=False, front_shop_id=None, 
+                include_category=False, schema=''):
     product_info = None
     if params.get('identifier') is not None:
         product_info = get_product_by_identifier(table_objs, session, 
@@ -190,7 +191,7 @@ def get_product_with_variations(table_objs, session, params: dict,
                                           include_category=include_category) 
     elif params.get('sku') is not None:
         product_info = get_variation_info_by_sku(table_objs, session, params['sku'],
-                                                 front_shop_id=front_shop_id)
+                                        front_shop_id=front_shop_id, schema=schema)
         if product_info is None:
             logger.debug(f'invalid params {params}')
             return 
@@ -366,7 +367,8 @@ def get_product_name_by_sku(table_objs, session, sku:str):
     return product_info
 
 
-def get_variation_info_by_sku(table_objs, session, sku:str, front_shop_id=None):
+def get_variation_info_by_sku(table_objs, session, sku:str, 
+                                   front_shop_id=None, schema=''):
     variation = db_select(table_objs.get('variation'), 
                    session, 
                    filters={'sku': sku})
@@ -383,8 +385,8 @@ def get_variation_info_by_sku(table_objs, session, sku:str, front_shop_id=None):
         #multi variation 
         assert front_shop_id is not None
         skus = [v.sku for v in variations]
-        parent = get_destination_parent(table_objs.get('destination'), 
-                                session, front_shop_id, skus)
+        parent = get_destination_parent(
+                        session, front_shop_id, skus, schema=schema)
         if parent and parent.get('destination_parent_id'):
             product_info['parent_id'] = parent['destination_parent_id']
             product_info['variations'] = [_object2dict(variation[0])] # variation with the sku
@@ -560,19 +562,22 @@ def update_inventory(table_obj, session,
 #                  params={'sku': sku})
 #     if len(res) > 0:
 #         return res[0]._asdict().get('sum')
-def get_variation_instock_by_skus(session, front_shop_id, skus: list):
-    return get_instock_by_skus(session, front_shop_id, skus)
+def get_variation_instock_by_skus(session, front_shop_id, 
+                       skus: list, schema=''):
+    return get_instock_by_skus(session, front_shop_id, 
+                                skus, schema=schema)
 
 def get_fulfilled_orders(table_objs, session, status='processing', 
-                           shop_order_id_list=None, params:dict=None):
+                           shop_order_id_list=None, params:dict=None, schema=''):
     if params is None: params = {}
     if shop_order_id_list is None:
-        ff = get_fulfilled_order_in_processing(table_objs, session, status=status, params=params)
+        ff = get_fulfilled_order_in_processing(table_objs, session, 
+                 status=status, params=params, schema=schema)
         return [r._asdict() for r in ff]
     elif type(shop_order_id_list) is list:
         ff = get_fulfilled_order_in_processing(table_objs, session, status=status, params={
             'shop_order_id_list': shop_order_id_list
-        })
+        }, schema=schema)
         return ff
     else:
         logger.debug('invalid parmas')

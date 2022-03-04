@@ -27,7 +27,23 @@ def project_engine(db_setting):
         retry_timeout=db_setting['db_setting'].get("database_retry_timeout"),
     )
     
-    init_tables(engine, db_setting['db_setting']['tables'])
+    if db_setting['db_setting']['db_type'] == 'postgres' \
+    and db_setting['db_setting']['db_conn'].get('schema'):
+        session_maker = sessionmaker(bind=engine)
+        session = session_maker()
+
+        add_schema(session, db_setting['db_setting']['db_type'], 
+                    db_setting['db_setting']['db_conn']['schema'])
+        set_schema(session, db_setting['db_setting']['db_type'], 
+                    db_setting['db_setting']['db_conn']['schema'])
+        session.close()
+        
+        # drop_all_tables(db_setting['db_setting']['tables'], engine,
+        #                 schema=db_setting['db_setting']['db_conn'].get('schema'))
+        
+    
+    init_tables(engine, db_setting['db_setting']['tables'], 
+               schema=db_setting['db_setting']['db_conn'].get('schema'))
 
     return engine
 
@@ -100,7 +116,7 @@ def add_schema(session, dialect, schema_name):
         create_schema = text(f"CREATE SCHEMA IF NOT EXISTS {schema_name}")
     
     if create_schema is not None:
-        print(create_schema)
+        # print(create_schema)
         session.execute(create_schema)
         session.commit()
             

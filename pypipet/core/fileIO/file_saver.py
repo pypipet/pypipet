@@ -1,5 +1,6 @@
 import pandas as pd
 import yaml
+import shutil
 
 
 def write_csv_file(data:list, filename):
@@ -17,3 +18,6 @@ def _model_to_dict(obj):
 def write_yaml(data, filename):
     with open(filename, 'w') as outfile:
         yaml.dump(data, outfile)
+
+def copy_file(src, dst):
+    shutil.copyfile(src, dst)

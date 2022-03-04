@@ -173,6 +173,8 @@ class WCShopConnector(ShopConnector):
                 
                             
     def get_product_at_shop(self, product_id, **kwargs):
+        if kwargs.get('parent_id') is not None:
+            product_id = kwargs['parent_id']
         res = wc.get_product_by_id(self.shop_api, product_id) 
         return self._parse_product(res, 
                                     kwargs.get('field_mapping', self.field_mapping))

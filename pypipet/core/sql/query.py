@@ -415,11 +415,13 @@ def get_variation_instock_all(table_objs, session, start_product_id, batch_size=
     return res
 
 @exception_handler
-def get_fulfilled_order_in_processing(table_objs, session, status='processing', params:dict=None):
+def get_fulfilled_order_in_processing(table_objs, session, 
+                           status='processing', params:dict=None, schema=''):
     statement = None
     if params is None: params={}
     if params.get('shop_order_id_list') is not None:
-        sql = 'select * from fulfillment where shop_order_id=ANY(:shop_order_id_list)'
+        if schema != '': schema = schema+'.'
+        sql = f'select * from {schema}fulfillment where shop_order_id=ANY(:shop_order_id_list)'
         return db_raw_query(sql, session, params={'shop_order_id_list': params['shop_order_id_list']}) 
     else:
         shop_order = table_objs.get('shop_order')
@@ -439,8 +441,10 @@ def get_fulfilled_order_in_processing(table_objs, session, status='processing', 
         return res
 
 @exception_handler
-def get_destination_parent(table_obj, session, front_shop_id, skus):
-    sql = 'select destination_parent_id from destination where \
+def get_destination_parent(session, front_shop_id, skus, schema=''):
+    if schema != '': schema = schema+'.'
+
+    sql = f'select destination_parent_id from {schema}destination where \
     front_shop_id=:front_shop_id and sku=ANY(:skus)'
     res = db_raw_query(sql, session, params={
         'front_shop_id': front_shop_id,
@@ -451,7 +455,7 @@ def get_destination_parent(table_obj, session, front_shop_id, skus):
     
 
     #if other sku was added as simple product(WC) without parent
-    sql = 'select destination_product_id from destination where \
+    sql = f'select destination_product_id from {schema}destination where \
     front_shop_id=:front_shop_id and sku=ANY(:skus) and \
     destination_parent_id is NULL'
     res = db_raw_query(sql, session, params={
@@ -462,9 +466,11 @@ def get_destination_parent(table_obj, session, front_shop_id, skus):
         return res[0]
 
 @exception_handler
-def get_instock_by_skus(session, front_shop_id, skus):
-    sql = 'select destination_product_id, inventory_item_id, in_stock \
-    from variation join destination on variation.sku=destination.sku where \
+def get_instock_by_skus(session, front_shop_id, skus, schema=''):
+    if schema != '': schema = schema+'.'
+
+    sql = f'select destination_product_id, inventory_item_id, in_stock \
+    from {schema}variation join {schema}destination on variation.sku=destination.sku where \
     front_shop_id=:front_shop_id and available=True and is_current_price=True \
     and variation.sku=ANY(:skus) '
     res = db_raw_query(sql, session, params={

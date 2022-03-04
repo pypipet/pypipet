@@ -79,7 +79,8 @@ def product(ctx, action, shop, sku, price, currency, filename, include_stock,ski
                                 currency,
                                 project.config.get('attr_list'),
                                 project.config.get('variation_attrs'),
-                                filename) 
+                                filename,
+                                schema=project.schema) 
         else: 
             price = float(price)
             _launch_to_shop(session, table_classes, shop_conn, 
@@ -119,7 +120,8 @@ def product(ctx, action, shop, sku, price, currency, filename, include_stock,ski
                     table_classes, session, 
                     {'sku': s}, 
                      include_published=True, 
-                     front_shop_id=shop_conn.front_shop_id)
+                     front_shop_id=shop_conn.front_shop_id,
+                     schema=project.schema)
             click.echo(variation_info)
     else:
         click.secho('action not supported: {}'.format(action),
@@ -128,13 +130,14 @@ def product(ctx, action, shop, sku, price, currency, filename, include_stock,ski
     session.close()
 
 def _launch_to_shop_by_file(session, table_classes, shop_conn,  
-                            currency, attrs, variation_attrs, filename):
+                            currency, attrs, variation_attrs, filename, schema=''):
     data = _get_data_from_file(filename, 'launch')
     
     for sku_price in data:
         product_info = get_product_info(table_classes, session, shop_conn, 
                     sku=sku_price['sku'],
-                    include_category=True)
+                    include_category=True,
+                    schema=schema)
         res = add_product_to_shop(table_classes, session, shop_conn, product_info, 
                                         price=sku_price['price'],
                                         currency=currency,
@@ -146,11 +149,12 @@ def _launch_to_shop_by_file(session, table_classes, shop_conn,
 
 
 def _launch_to_shop(session, table_classes, shop_conn, skus, 
-                            price, currency, attrs, variation_attrs):
+                            price, currency, attrs, variation_attrs, schema=''):
     for sku in skus:
         product_info = get_product_info(table_classes, session, shop_conn, 
                     sku=sku,
-                    include_category=True)
+                    include_category=True,
+                    schema=schema)
         res = add_product_to_shop(table_classes, session, shop_conn, product_info, 
                                         price=price,
                                         currency=currency,

@@ -155,7 +155,7 @@ def _parse_variation_response(vari_list: list, parent_id):
             logger.debug(f'wc bulk add failed {vari}')
             continue
         res[vari['sku']] = {
-                'destination_product_id': vari['id'],
+                'id': vari['id'],
                 'destination_parent_id': parent_id,
                 }
     return res

@@ -9,7 +9,7 @@ from pypipet.core.fileIO.file_loader import read_csv_file
 @click.argument("action",  type=click.Choice(['add', 'edit', 'show']))
 @click.option("--target", type=click.Choice(['supplier', 'front_shop', 'tax', 'category']))
 @click.option("-f", "--filename",
-                help=" add/edit  in bulk")
+                help=" add/edit  with feed files")
 @click.pass_context
 def Static(ctx, action, target, filename):
     """

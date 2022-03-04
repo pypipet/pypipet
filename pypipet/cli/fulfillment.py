@@ -24,7 +24,7 @@ from pprint import pprint
 @click.option("-f", "--filename",
                 help=" edit tracking info in bulk")
 @click.option('--message', is_flag=True, 
-                        help="skip updating front shop for action edit.")
+                        help="send message to customers.")
 @click.pass_context
 def fulfillment(ctx, action, shop, tracking, provider, order_id, filename, message):
     """

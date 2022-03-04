@@ -7,7 +7,7 @@ from pypipet.plugins.woocommerce.api import API as WC_API
 import shopify as SHOPIFY_API
 from pypipet.core.logging import setup_logging
 from pypipet.core.fileIO.file_loader import read_yml_file
-from pypipet.core.fileIO.file_saver import write_yaml
+from pypipet.core.fileIO.file_saver import write_yaml, copy_file
 from pypipet.core.shop_conn.shop_connector_wc import WCShopConnector
 from pypipet.core.shop_conn.shop_connector_shopify import SPFShopConnector
 from pypipet.core.shop_conn.spf_auth import start_session
@@ -25,6 +25,7 @@ class PipetContext():
         self.config = None
         self.db_config = None
         self._shop_connectors = {}
+        self.schema = ''
 
     def start_project(self, project_name, **kwargs):
         if os.path.isfile(self.root + 'setting.yaml'):
@@ -38,20 +39,15 @@ class PipetContext():
                    self.root + 'setting.yaml')
 
         os.makedirs(self.root + 'bundle', exist_ok=True)
-        db_setting = read_yml_file(DB_SETTING)
-        write_yaml(db_setting,
-                   self.root + 'bundle/db_setting.yaml')
+        copy_file(DB_SETTING, self.root + 'bundle/db_setting.yaml')
 
-        wc_mapping = read_yml_file(WC_MAPPING)
-        write_yaml(wc_mapping,
-                   self.root + 'bundle/wc_field_mapping.yaml')
+        copy_file(WC_MAPPING,
+                  self.root + 'bundle/wc_field_mapping.yaml')
 
-        wc_mapping = read_yml_file(SPF_MAPPING)
-        write_yaml(wc_mapping,
+        copy_file(SPF_MAPPING,
                    self.root + 'bundle/spf_field_mapping.yaml')
 
-        file_template = read_yml_file(FILE_TEMPLATE)
-        write_yaml(file_template,
+        copy_file(FILE_TEMPLATE,
                    self.root + 'bundle/file_template.yaml')
         return True
 
@@ -68,7 +64,9 @@ class PipetContext():
             if not is_valid:
                 logger.info(message)
                 return 
-            
+        
+        if self.db_config['db_setting']['db_type'] in  ('postgres'):
+            self.schema = self.db_config['db_setting']['db_conn'].get('schema', '')   
         
         if self.engine is None:
             self.engine = project_engine(self.db_config)
@@ -123,8 +121,12 @@ class PipetContext():
 
     def set_table_objects(self, engine):
         base = automap_base()
-        base.prepare(engine, reflect=True)
+        if self.schema == '':
+            base.prepare(engine, reflect=True)
+        else:
+            base.prepare(engine, reflect=True, schema=self.schema)
         self.table_objects = base.classes 
+       
 
     def get_table_objects(self):
         return self.table_objects

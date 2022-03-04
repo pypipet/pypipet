@@ -64,7 +64,7 @@ def get_shipping_info(table_objs, session, params:dict):
 
 
 def get_unfulfilled_order_inprocesss(table_objs, session, status='processing', 
-                                                               params:dict=None):
+                            params:dict=None, schema=''):
     if params is None: params = {}
     params.update({'status': status})
     in_process = search_exist(table_objs.get('shop_order'), session,params )
@@ -72,7 +72,7 @@ def get_unfulfilled_order_inprocesss(table_objs, session, status='processing',
         in_process_orders = [_object2dict(r) for r in in_process]
         shop_order_id_list = [r['id'] for r in in_process_orders]
         fulfilled = get_fulfilled_orders(table_objs, session, status=status,
-                shop_order_id_list=shop_order_id_list)
+                shop_order_id_list=shop_order_id_list, schema=schema)
         
         fulfilled_order_ids =set( [r['shop_order_id'] for r in fulfilled])
        
@@ -85,11 +85,11 @@ def get_unfulfilled_order_inprocesss(table_objs, session, status='processing',
     logger.debug(f'invalid params {params}')
 
 def get_fulfilled_orders_inprocess(table_objs, session, status='processing', 
-                                                              params:dict=None):
+                           params:dict=None, schema=''):
     if params is None: params = {}
     params.update({'status': status})
     fulfilled = get_fulfilled_orders(table_objs, session, status=status,
-                params=params)
+                params=params, schema=schema)
         
 
     return fulfilled

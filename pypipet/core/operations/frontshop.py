@@ -6,7 +6,7 @@ from copy import deepcopy
 import logging
 logger = logging.getLogger('__default__')
 
-_DEBUG_ = False
+_DEBUG_ = True
 
 
 def add_taxonomy_to_db(table_obj, session, shop_connector):
@@ -43,8 +43,7 @@ def get_product_from_shop(shop_connector,
                                 destination_product_id, **kwargs):
     res = shop_connector.get_product_at_shop(destination_product_id,
                                              **kwargs)
-    if res:
-        return res
+    return res
 
 def add_product_to_db_bulk(table_objs, session, 
                             shop_connector,products:list, currency='USD'):
@@ -184,7 +183,8 @@ def get_product_info(table_objs, session, shop_connector, identifier=None,
                      params, 
                      include_published=include_published,
                      include_category=include_category, 
-                     front_shop_id=shop_connector.front_shop_id)
+                     front_shop_id=shop_connector.front_shop_id,
+                     schema=kwargs.get('schema', ''))
     return variation_info
 
 def add_product_to_shop(table_objs, session, shop_connector, product_info, 
@@ -294,7 +294,8 @@ def add_variation_to_shop(table_objs, session, shop_connector,
     product_info = get_product_with_variations(table_objs, session, 
                     {'sku': sku}, 
                      include_published=False, 
-                     front_shop_id=shop_connector.front_shop_id)
+                     front_shop_id=shop_connector.front_shop_id,
+                     schema=kwargs.get('schema', ''))
     
     if product_info is None:
         return 

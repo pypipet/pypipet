@@ -11,7 +11,7 @@ from pypipet.core.project_context import PipetContext
 @click.pass_context
 def cli(ctx, log_level, log_path, verbose, config):
     """
-    Get help at https://abc
+    Get help at https://pypipet.com
     """
     #init context
     project = PipetContext()

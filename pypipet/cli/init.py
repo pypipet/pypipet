@@ -7,7 +7,7 @@ from .cli import cli
 @click.pass_context
 def new(ctx,project_name):
     """
-    initialize project
+    create new project
     """
     click.echo('initialize project: {}'.format(project_name))
     res = ctx.obj['project'].start_project(project_name)
