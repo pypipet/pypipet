@@ -7,8 +7,6 @@ from pypipet.core.operations.order import  add_order_to_db
 from pypipet.core.operations.order import  add_orders_to_db_bulk
 from pypipet.core.operations.order import  update_order_to_db
 from pypipet.core.operations.order import  get_order_info
-from pypipet.core.operations.inventory import  update_instock_to_variation_db
-
 from pypipet.core.sql.query_interface import search_exist
 from pypipet.core.model.order import Order
 
@@ -59,18 +57,10 @@ def order(ctx, action, shop, order_id, manual, filename):
     get_front_shop_id(table_classes, session, shop_conn)
 
     if action == 'sync':
-        sold = None
         if order_id is not None:
-            sold = _sync(session, table_classes, shop_conn, order_id=order_id)
+            _sync(session, table_classes, shop_conn, order_id=order_id)
         else:
-            sold = _sync(session, table_classes, shop_conn)
-        # to do: update in_stock sync from shop to db
-        if sold:
-            for sku, qty in sold.items():
-                update_qty = update_instock_to_variation_db(
-                    table_classes.get('variation'),session, sku, qty)
-                click.echo('sync sku {}, sold {}, current'.format(sku, qty, update_qty)) 
-
+            _sync(session, table_classes, shop_conn)
 
     elif action == 'status':
         _status(session, table_classes, shop_conn, 
@@ -99,34 +89,19 @@ def _get_order(session, table_classes, shop_conn, order_id):
     click.echo(order_info)
     return order_info
 
-def _calculate_sold(orders):
-    sold = {}
-    for order in orders:
-        # pprint(order['order_item'])
-        for item in order['order_item']:
-            sku = item['sku']
-            if sold.get(sku):
-                sold[sku] += item['order_qty']
-            else:
-                sold[sku] = item['order_qty']
-    return sold
-
 def _sync(session, table_classes, shop_conn, order_id=None):
     if order_id is None:
         orders = get_orders_from_shop(table_classes, session, shop_conn)
         add_orders_to_db_bulk(table_classes, session, orders, 
                               shop_conn.front_shop_id)
         click.echo('sync orders total {}'.format(len(orders)))
-        return _calculate_sold(orders)
     else:
         order = Order()
-        shop_order = get_order_from_shop_by_id(order_id, shop_conn)
         order.set_order(table_classes, 
-                       shop_order)
+                       get_order_from_shop_by_id(order_id, shop_conn))
         add_order_to_db(table_classes, session, order,
                                 shop_conn.front_shop_id)
         click.echo('sync order {}'.format(order_id))    
-        return _calculate_sold([shop_order])
 
 def _status(session, table_classes, shop_conn, manual, order_id=None):
     if order_id is None:

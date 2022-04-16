@@ -474,16 +474,18 @@ def get_order(table_objs, session, params:dict, **kwargs):
                    session, 
                    filters={'shop_order_id': order.id})
     if kwargs.get('item_info') == True:
-        item_info =  []
+        order_items_info =  []
         for d in order_items:
             prods = get_products(table_objs, session, {'sku': d.sku})
+            d = _object2dict(d)
+            d.update(prods[0]._asdict())
             
-            item_info.append(prods[0]._asdict())
+            order_items_info.append(d)
         
     else:
-        order_items =  [_object2dict(d) for d in order_items]
+        order_items_info =  [_object2dict(d) for d in order_items]
 
-    order_info['order_item'] = item_info
+    order_info['order_item'] = order_items_info
 
     billing = db_select(table_objs.get('customer'), 
                    session, 

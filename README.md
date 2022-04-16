@@ -14,10 +14,12 @@
 * For source code,  visit  [github repository](https://github.com/pypipet/pypipet).
 * For documentation, vist [docs](https://pypipet.com)
 
-## Latest `pip` [version: 1.0.1](https://pypi.org/project/pypipet/)
+## Latest `pip` [version: 1.0.2](https://pypi.org/project/pypipet/)
 ### update
-- enable schema in postgres
-- fixed bugs in woocommerce connectors
+- config log path and log level in setting.yaml
+- fixed bugs in get_order_info
+- update instock qty after sync orders
+- missing address2 in customer shipping address
 
 [reporting bugs here](https://github.com/pypipet/pypipet/issues)
 

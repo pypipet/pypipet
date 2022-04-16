@@ -72,7 +72,7 @@ def add_order_to_db(table_objs, session, order:Order, front_shop_id:int):
                 }
             )
             if dests is None or len(dests) == 0:
-                logger.debug(f"order {res['id']} no product found at destination shop. \
+                logger.debug(f"order {res} no product found at destination shop. \
                     sku {item.sku}")
                 return None
             item.set_attr('destination_id', dests[0]['id'])
@@ -99,9 +99,9 @@ def get_orders_from_shop(table_objs, session, shop_connector, **kwargs):
         previous_upddate = get_latest_record(
                             table_objs.get('shop_order'), 
                             session, 
-                            key='destination_order_id',
+                            key='id',
                             params={'front_shop_id': shop_connector.front_shop_id})
-        
+        logger.debug(f'previous update order: {previous_upddate}')
         if previous_upddate:
             latest_order_id = previous_upddate.destination_order_id
     

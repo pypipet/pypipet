@@ -191,3 +191,19 @@ def match_variation_sku_by_upc(table_obj, session, invs:list):
 #                         session, 
 #                         {'in_stock': rd['qty']}, 
 #                         {'sku': rd['sku']})
+
+def update_instock_to_variation_db(table_obj, session, sku, qty):
+    instock = search_exist(table_obj, 
+                        session, 
+                        {'sku': sku})
+    if instock is None or len(instock) == 0:
+        logger.debug(f'sku does not exist {sku}')
+        return 
+
+    updated_qty = instock[0].in_stock - qty
+    assert isinstance(qty, int)
+    update_data(table_obj, 
+                session, 
+                {'in_stock': updated_qty}, 
+                {'sku': sku})
+    return updated_qty

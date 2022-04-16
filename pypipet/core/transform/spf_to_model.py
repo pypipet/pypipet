@@ -46,6 +46,7 @@ def parse_order(data, attr_mapping,shipping_tax_id=None, item_tax_id=None, **kwa
             if data['billing_address']['first_name'] == data['shipping_address']['first_name'] \
             and data['billing_address']['last_name'] == data['shipping_address']['last_name'] \
             and data['billing_address']['address1'] == data['shipping_address']['address1'] \
+            and data['billing_address']['address2'] == data['shipping_address']['address2'] \
             and data['billing_address']['zip'] == data['shipping_address']['zip'] :
                 order_data['shipping_customer'] = order_data['billing_customer']
                 order_data['billing_customer']['is_shipping'] = True

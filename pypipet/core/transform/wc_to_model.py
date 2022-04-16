@@ -49,6 +49,7 @@ def wp_parse_order(data:dict, attr_mapping: dict,
         if data['billing']['first_name'] == data['shipping']['first_name'] \
         and data['billing']['last_name'] == data['shipping']['last_name'] \
         and data['billing']['address_1'] == data['shipping']['address_1'] \
+        and data['billing']['address_2'] == data['shipping']['address_2'] \
         and data['billing']['postcode'] == data['shipping']['postcode'] :
             order_data['shipping_customer'] = order_data['billing_customer']
             order_data['billing_customer']['is_shipping'] = True
@@ -60,6 +61,13 @@ def wp_parse_order(data:dict, attr_mapping: dict,
     else:
         order_data['shipping_customer'] = order_data['billing_customer']
         order_data['billing_customer']['is_shipping'] = True
+
+    if order_data['shipping_customer'].get('phone') is None \
+        or order_data['shipping_customer']['phone'].strip() == '':
+        order_data['shipping_customer']['phone'] = order_data['billing_customer']['phone']
+    if order_data['shipping_customer'].get('email') is None \
+        or order_data['shipping_customer']['email'].strip() == '':
+        order_data['shipping_customer']['email'] = order_data['billing_customer']['email']
     
     return order_data
 

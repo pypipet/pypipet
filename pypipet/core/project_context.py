@@ -75,6 +75,9 @@ class PipetContext():
             self.set_table_objects(self.engine)
             self._session_maker = sessionmaker(bind=self.engine)
             self._initialize_shops()
+        
+        self.set_log_level(self.config['log_level'], 
+                           path=self.config['log_path'])
 
     def _initialize_shops(self):
         for shop_name, shop_config in self.config['shops'].items():
@@ -115,6 +118,8 @@ class PipetContext():
         return None
     
     def set_log_level(self, log_level, path='./'):
+        if log_level is None: log_devel = 'info'
+        if path is None: path = './'
         self.log_level = log_level
         setup_logging(log_level, log_path=path)
 

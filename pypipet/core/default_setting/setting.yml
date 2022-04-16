@@ -1,6 +1,8 @@
 project_setting:
   name: name
   home_dir: './'
+  log_level: debug
+  log_path: './'
   databse_setting: bundle/db_setting.yaml
   wc_field_mapping: bundle/wc_field_mapping.yaml
   spf_field_mapping: bundle/spf_field_mapping.yaml
