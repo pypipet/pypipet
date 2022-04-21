@@ -2,6 +2,8 @@ project_setting:
   databse_setting: bundle/db_setting.yaml
   file_template: bundle/file_template.yaml
   home_dir: ./
+  log_level: debug
+  log_path : ./logs/
   name: new_proj
   default_brand: NA
   plugins:
