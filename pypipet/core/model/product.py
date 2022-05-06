@@ -1,3 +1,4 @@
+from itertools import product
 from .base_object import BaseObject
 from pprint import pprint
 import logging
@@ -44,9 +45,17 @@ class Variation(BaseObject):
     #     return variation
 
 
-    def set_variation(self, table_objs, attrs: dict):
+    def set_variation(self, table_objs, attrs: dict,**kwargs):
         self.set_attrs_by_table_class(table_objs.get(self.__table_name__), 
                                      attrs)
+        # variation title
+        if self.get_attr('title') is None:
+            if kwargs.get('variation_attrs'):
+                self._set_variation_title(kwargs.get('product_name'), 
+                                        kwargs['variation_attrs'])
+            else:
+                self.set_attr('title', kwargs.get('product_name'))
+
         if attrs.get('destinations'):
             for dest_data in attrs['destinations']:
                 dest = Destination()
@@ -56,10 +65,20 @@ class Variation(BaseObject):
                 self.destinations.append(dest)
 
     def print_variation(self):
-        print('variations')
-        pprint(self.get_all_attrs())
+        # print('variations')
+        # pprint(self.get_all_attrs())
         for dest in self.destinations:
             dest.print_destination()
+
+    def _set_variation_title(self, product_name, variation_attrs):
+        title = ''  
+        for attr in variation_attrs:
+            if self.get_attr(attr):
+                title += ' ' + attr + ' ' + str(self.get_attr(attr))
+        if title.strip() == '':
+            self.set_attr('title', product_name)
+        else:
+            self.set_attr('title', f'product_name ({title.strip()})') 
     # def add_to_shop(self, front_shop:dict, data:dict):
     #     """"
     #     add variation to front shop
@@ -103,7 +122,7 @@ class Product(BaseObject):
                 product['variations'].append(vari.get_variation())
         return product
 
-    def set_product(self, table_objs, attrs: dict):
+    def set_product(self, table_objs, attrs: dict,**kwargs):
         """
         set up product object
         :table_objs: table classes
@@ -121,9 +140,13 @@ class Product(BaseObject):
                 variation = Variation()
                 if vari.get('sku'):
                     vari['sku'] = str(vari['sku'])
-                variation.set_attrs_by_table_class(
-                                        table_objs.get(variation.__table_name__), 
-                                        vari)
+                variation.set_variation(table_objs, vari,
+                       product_name = self.get_attr('product_name'), **kwargs)
+                # variation.set_attrs_by_table_class(
+                #                         table_objs.get(variation.__table_name__), 
+                #                         vari,
+                #                         product_name = self.get_attr('product_name'),
+                #                         **kwargs)
                 self.variations.append(variation)
 
     def update_product_id(self, product_id):

@@ -1,25 +1,16 @@
 
-# from pypipet.core.sql.query import *
-# from pypipet.core.shop_conn.gateway import update_shop_product, update_shop_product_batch
 from pypipet.core.sql.query_interface import get_server_timestamp
 from pypipet.core.sql.query_interface import add_json_to_db, search_exist
 from pypipet.core.sql.query_interface import update_data, update_inventory,update_bulk
-# from pypipet.core.sql.query_interface import get_inventory_update_after
 from pypipet.core.sql.query_interface import get_variation_instock_qty
 from pypipet.core.sql.query_interface import aggregate_inventory_qty
 from pypipet.core.model.product import Inventory
 from .utility import _object2dict
-# from pypipet.core.sql.model2query import add_new_product_inventory
 import logging
 from datetime import datetime, timedelta
 
 logger = logging.getLogger('__default__')
 
-# def _get_params(data: dict, param_list:list):
-#     params = {}
-#     for param in param_list:
-#         if data.get(param): params[param] = data[param]
-#     return params
 
 def get_supplier_id(table_obj, session, params):
     suppliers = search_exist(table_obj, 
@@ -32,7 +23,7 @@ def get_supplier_id(table_obj, session, params):
 
 def update_inventory_bulk(table_objs, session, invs:list, 
                                    batch_size=500, ignore_new=True):
-    """ignore_new: if sku already in inventory table (updated before)"""
+    """ignore_new: if sku already in inventory table """
     if ignore_new:
         #require id to update in bulk query
         if invs and len(invs) > 0:
@@ -91,6 +82,25 @@ def update_inventory_db_by_sku(table_objs, session, sku, inv:dict, params:dict =
                         session, 
                         {'in_stock': qty}, 
                         {'sku': sku})
+
+def update_inventory_order_processing(table_objs, session, sku, sale_qty, supplier_id=None):
+    """after process order, update the inventory
+        if not managed with supplier, update instock(variation) only 
+    """
+    sku_inv = get_inventory_by_sku(table_objs, session, sku, by_supplier=True)
+
+    if supplier_id:
+        supplier_inv = list(filter(lambda inv: (inv['supplier_id']==supplier_id), sku_inv))
+        if len(supplier_inv) > 0:
+            update_inventory(table_objs.get('inventory'), session, {'qty': supplier_inv[0]['qty'] - sale_qty}, 
+                                        {'id': supplier_inv[0]['id']})
+        
+    in_stock = sum([item['qty'] for item in sku_inv]) - sale_qty
+    update_data(table_objs.get('variation'), 
+                    session, 
+                    {'in_stock': in_stock}, 
+                    {'sku': sku})
+    return in_stock
 
 def update_instock_qty_db(table_objs, session, batch_size=50, 
                         params:dict=None, latest_hours=24):
@@ -200,7 +210,7 @@ def update_instock_to_variation_db(table_obj, session, sku, qty):
         logger.debug(f'sku does not exist {sku}')
         return 
 
-    updated_qty = instock[0].in_stock - qty
+    updated_qty = max(0, instock[0].in_stock - qty)
     assert isinstance(qty, int)
     update_data(table_obj, 
                 session, 

@@ -40,20 +40,19 @@ def product_parser(product, attr_list, option_attrs, add_new=True, **kwargs):
     if product.get('updated_at'): del product['updated_at']
     if product.get('id'): del product['id']
     if product.get('product_id'): del product['product_id']
-    if product.get('short_description'):del product['short_description']
-    if product.get('description'):
-        product['body_html'] = product['description']
-        del product['description']
+    # if product.get('short_description'):del product['short_description']
+    if product.get('short_description'):
+        product['body_html'] = product['short_description']
+        del product['short_description']
 
     if product.get('brand') is not None:
         product['vendor'] = product['brand']
 
     if kwargs.get('weight_unit'):
         product['weight_unit'] = kwargs['weight_unit']
-    if product.get('product_name'):
-        product['title'] = product['product_name']
+    
 
-    if add_new and product.get('product_type') is None:
+    if add_new and product.get('category') and product.get('product_type') is None:
         product['product_type'] = product['category']
 
     imgs, variation_imgs = _parser_img_mapping(product)
@@ -71,14 +70,15 @@ def product_parser(product, attr_list, option_attrs, add_new=True, **kwargs):
     for i, vari in enumerate(variants):   
         if vari.get('created_at'): del vari['created_at']
         if vari.get('updated_at'): del vari['updated_at']
-        
+        if vari.get('product_name'): del vari['product_name']
         if vari.get('body_html'): del vari['body_html']
         if vari.get('id'): del vari['id']
         if vari.get('product_id'): del vari['product_id']
-        if vari.get('description'): 
-            if product.get('body_html') is None:
-                product['body_html'] = vari['description']
-            del vari['description']
+        # if vari.get('description'): 
+        #     if product.get('body_html') is None:
+        #         product['body_html'] = vari['description']
+        #     del vari['description']
+            
         if vari.get('upc'):
             vari['barcode'] = vari['upc']
         if vari.get('ean'):
@@ -112,6 +112,8 @@ def product_parser(product, attr_list, option_attrs, add_new=True, **kwargs):
 
         
     product['variants'] = variants
+    if product.get('product_name'):
+        product['title'] = product['product_name']
 
     if product.get('variations'):
         del product['variations']

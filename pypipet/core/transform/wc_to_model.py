@@ -164,8 +164,8 @@ def parse_product_with_variations(data:dict, attr_mapping):
         field_mapping(vari, vari_info, attr_mapping['variation_attrs'])
         
         vari_info['images'] = ','.join([vari_info['images'],default_variation['images']])
-        vari_info['description'] = default_variation['description'] + '\n' \
-                                   + vari_info['description']
+        # vari_info['description'] = default_variation['description'] + '\n' \
+        #                            + vari_info['description']
         if vari.get('sku') is None or vari['sku'].strip() == '':
             vari_info['sku'] = str(data['id'])
         

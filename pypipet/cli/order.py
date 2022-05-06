@@ -69,7 +69,7 @@ def order(ctx, action, shop, order_id, manual, filename):
             for sku, qty in sold.items():
                 update_qty = update_instock_to_variation_db(
                     table_classes.get('variation'),session, sku, qty)
-                click.echo('sync sku {}, sold {}, current'.format(sku, qty, update_qty)) 
+                click.echo('sync sku {}, sold {}, current {}'.format(sku, qty, update_qty)) 
 
 
     elif action == 'status':

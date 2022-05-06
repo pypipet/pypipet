@@ -5,7 +5,7 @@ from pypipet.core.project_context import PipetContext
 @click.group(invoke_without_command=True, no_args_is_help=True)
 @click.option("--log-level", type=click.Choice(LEVELS.keys()), 
                              default='debug')
-# @click.option("--log-path", default='./')
+@click.option("--log-path", default='./')
 @click.option("-v", "--verbose", count=True)
 @click.option("-conf", "--config", default='setting.yaml')
 @click.pass_context
@@ -26,8 +26,8 @@ def cli(ctx, log_level, log_path, verbose, config):
         if config == 'setting.yaml':
             ctx.obj["config"] = ctx.obj['project'].root + config
 
-    # if log_level:
-    #     project.set_log_level(log_level, log_path)
+    if log_level:
+        project.set_log_level(log_level, log_path)
         
     click.echo(project.log_level)
     

@@ -5,7 +5,7 @@ from pypipet.core.operations.frontshop import update_product_to_db
 from pypipet.core.operations.frontshop import update_variation_to_db
 from pypipet.core.operations.frontshop import update_destination_to_db
 from pypipet.core.operations.frontshop import update_product_at_front_shop, update_product_at_front_shop_bulk
-from pypipet.core.operations.frontshop import add_variation_to_shop, add_product_to_shop
+from pypipet.core.operations.frontshop import  add_product_to_shop
 from pypipet.core.operations.frontshop  import get_product_with_variations,get_product_info
 from pypipet.core.sql.query_interface import  search_exist
 from pypipet.core.operations.inventory import get_inventory_by_sku, update_instock_front_shop
@@ -134,7 +134,7 @@ def _launch_to_shop_by_file(session, table_classes, shop_conn,
     data = _get_data_from_file(filename, 'launch')
     
     for sku_price in data:
-        product_info = get_product_info(table_classes, session, shop_conn, 
+        product_info = get_product_info(table_classes, session, shop_conn.front_shop_id, 
                     sku=sku_price['sku'],
                     include_category=True,
                     schema=schema)
@@ -151,7 +151,7 @@ def _launch_to_shop_by_file(session, table_classes, shop_conn,
 def _launch_to_shop(session, table_classes, shop_conn, skus, 
                             price, currency, attrs, variation_attrs, schema=''):
     for sku in skus:
-        product_info = get_product_info(table_classes, session, shop_conn, 
+        product_info = get_product_info(table_classes, session, shop_conn.front_shop_id, 
                     sku=sku,
                     include_category=True,
                     schema=schema)

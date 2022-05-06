@@ -220,6 +220,8 @@ class SPFShopConnector(ShopConnector):
         return products
                                     
     def get_product_at_shop(self, product_id: str, include_meta=True, **kwargs):
+        """ get variant if parent_id is not passed, 
+        otherwise pass product_id as None, it will get product"""
         has_active_session = kwargs.get('has_active_session', False)
         if has_active_session == False:
             shopify.ShopifyResource.activate_session(self.shop_api)

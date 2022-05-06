@@ -29,11 +29,11 @@ def parse_to_wp_product_variable(shop_api, product_info: dict, attr_list,
                                addtional_attrs=addtional_attrs)
     
     parent_product = {'name': product_info['product_name'],
-                    'short_description': product_info['short_description'],
+                    # 'short_description': product_info['short_description'],
                     'type': 'variable',
                     'attributes': attrs,
                     'default_attributes': product_info['variations'][0]['attributes'],
-                    'description': product_info['variations'][0]['description'],
+                    'description': product_info['short_description'],
                     # 'category': product_info['category']
                     }
     if product_info.get('parent_note') is not None:
@@ -122,6 +122,10 @@ def parse_to_wp_product(shop_api, product_info: dict, attr_list, product_type='s
 
     if product_info.get('weight') is not None:
         product_info['weight'] = str(product_info['weight'])
+
+    if product_info.get('short_description') is not None:
+        product_info['description'] = product_info['short_description']
+        del product_info['short_description']
 
     if product_info.get('length') is not None and product_info.get('width') \
         is not None and product_info.get('height') is not None:

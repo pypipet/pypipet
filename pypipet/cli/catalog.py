@@ -1,10 +1,10 @@
 import click 
 from .cli import cli
 from pypipet.core.operations.utility import get_front_shop_id
-from pypipet.core.operations.frontshop import add_taxonomy_to_db
+# from pypipet.core.operations.frontshop import add_taxonomy_to_db
 from pypipet.core.operations.frontshop import add_product_to_db_bulk
-from pypipet.core.operations.frontshop import add_product_to_db
-from pypipet.core.operations.frontshop import add_destination_to_db
+# from pypipet.core.operations.frontshop import add_product_to_db
+# from pypipet.core.operations.frontshop import add_destination_to_db
 from pypipet.core.operations.frontshop import load_products_from_shop
 from pypipet.core.fileIO.file_loader import read_csv_file
 from .utility import col2dict
@@ -71,7 +71,7 @@ def _load_from_shop_batch(table_objs, session,
                          shop_connector, default_brand='',
                          currency='USD'):
     load_products_from_shop(table_objs, session, shop_connector, 
-                         start_from=1, currency='USD')
+                         start_from=1, currency=currency)
         
 
 def _load_from_file(table_objs, session, filename,
@@ -101,7 +101,7 @@ def _load_from_file(table_objs, session, filename,
         products.append(p)
         
     click.echo('editing database')
-    add_product_to_db_bulk(table_objs, session, shop_connector, 
+    add_product_to_db_bulk(table_objs, session, shop_connector.front_shop_id, 
                           products, currency=currency)
 
 

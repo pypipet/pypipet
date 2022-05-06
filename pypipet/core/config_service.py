@@ -36,7 +36,7 @@ def validate(db_setting):
         'category': ['category', 'full_path'],
         'product': ['product_name', 'identifier'],
         'front_shop': ['name', 'provider'],
-        'variation': ['sku', 'description',  'product_id'],
+        'variation': ['sku', 'title', 'upc', 'product_id'],
         'tax': ['name', 'country_code', 'default_rate'],
         'destination': ['destination_product_id', 'price', 'currency',
                     'is_current_price', 'sku', 'front_shop_id', 'available'],

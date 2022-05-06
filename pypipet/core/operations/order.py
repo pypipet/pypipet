@@ -37,7 +37,8 @@ def add_order_to_db(table_objs, session, order:Order, front_shop_id:int):
     #shipping customer
     shipping_customer = order.shipping_customer
     if shipping_customer:
-        search_keys = ['first_name', 'last_name', 'postcode']
+        search_keys = ['first_name', 'last_name', 
+        'postcode', 'address1', 'address2'] 
         if shipping_customer.get_attr('email') is not None:
             search_keys.append('email')
         res = add_if_not_exist(table_objs.get(shipping_customer.__table_name__), 
@@ -101,9 +102,10 @@ def get_orders_from_shop(table_objs, session, shop_connector, **kwargs):
                             session, 
                             key='id',
                             params={'front_shop_id': shop_connector.front_shop_id})
-        logger.debug(f'previous update order: {previous_upddate}')
+        
         if previous_upddate:
             latest_order_id = previous_upddate.destination_order_id
+            logger.debug(f'previous update order: {latest_order_id}')
     
     order_data = shop_connector.sync_shop_orders(
                     latest_order_id = latest_order_id)
@@ -150,7 +152,7 @@ def update_order_to_db(table_obj, session, order_info:dict):
                     session, 
                     order_info, 
                     {'id': shop_order_id})
-        order_info['id'] = shop_order_id
+        # order_info['id'] = shop_order_id
     elif order_info.get('destination_order_id') is not None \
     and order_info.get('front_shop_id') is not None:
         return update_data(table_obj, 
@@ -165,41 +167,15 @@ def update_order_to_db(table_obj, session, order_info:dict):
 
 
 
-def sync_order_change_from_shop(table_objs, session, shop_connector, destination_order_id):
+
+def update_order_status(table_objs, session, shop_connector, destination_order_id):
     order_info = get_order_from_shop_by_id(destination_order_id, shop_connector)
-
-    order = Order()
-    order.set_order(table_objs, order_info)
-    order.set_attr('front_shop_id', shop_connector.front_shop_id)
-    update_order_to_db(table_objs.get('shop_order'), session, order.get_all_attrs())
-
-    #get order.id
-    order_id = None
     exist_order = search_exist(table_objs.get('shop_order'), session, 
                     {'destination_order_id': destination_order_id,
                     'front_shop_id': shop_connector.front_shop_id})
     if exist_order and len(exist_order) > 0:
-        order_id = exist_order[0].id
-
-    for item in order.order_items:
-        update_order_item_to_db(table_objs, session, shop_connector.front_shop_id, 
-                        item.get_all_attrs(),  
-                        params={'destination_product_id': item.destination_product_id,
-                                'shop_order_id': order_id})
-    
-def update_order_item_to_shop(shop_connector, destination_order_id, order_items:list):
-    items = {}
-    for item in order_items:
-        if item.get('destination_product_id') is None:
-            logger.debug(f'missing destination_product_id {item}')
-            continue
-        items[item['destination_product_id']] = item
-    if len(items) == 0:
-        return 
-    print(items)
-    return shop_connector.update_order_item_at_shop(
-                            destination_order_id,
-                            items)
+        update_data(table_objs.get('shop_order'), session, 
+                      {'status': order_info['status']}, {'id':  exist_order[0].id})
 
 
 def update_order_item_to_db(table_objs, session, front_shop_id, 
@@ -227,10 +203,8 @@ def update_order_item_to_db(table_objs, session, front_shop_id,
         #by default, ship all as request
         if order_item.get('ship_qty') is None:
             order_item['ship_qty'] = order_item['order_qty']
-
+        
         add_json_to_db(table_objs.get('order_item'), session, order_item)
-
-
 
 def update_customer_to_db(table_obj, session, customer_info, **kwargs):
     params = {}
@@ -246,6 +220,64 @@ def update_customer_to_db(table_obj, session, customer_info, **kwargs):
                 session, 
                 customer_info, 
                 params)
+
+
+def sync_order_change_from_shop(table_objs, session, shop_connector, destination_order_id,  
+                                update_customer=False):
+    order_info = get_order_from_shop_by_id(destination_order_id, shop_connector)
+
+    order = Order()
+    order.set_order(table_objs, order_info)
+    order.set_attr('front_shop_id', shop_connector.front_shop_id)
+
+    #get order.id
+    order_id = None
+    exist_order = search_exist(table_objs.get('shop_order'), session, 
+                    {'destination_order_id': destination_order_id,
+                    'front_shop_id': shop_connector.front_shop_id})
+    if exist_order and len(exist_order) > 0:
+        order_id = exist_order[0].id
+        order.update_order_id(order_id)
+    else:
+        # add as new
+        add_order_to_db(table_objs, session, order, shop_connector.front_shop_id)
+        return
+    
+    #update table shop_order
+    update_order_to_db(table_objs.get('shop_order'), session, order.get_all_attrs())
+
+    
+
+    for item in order.order_items:
+        update_order_item_to_db(table_objs, session, shop_connector.front_shop_id, 
+                        item.get_all_attrs(),  
+                        params={'destination_product_id': item.destination_product_id,
+                                'shop_order_id': order_id})
+    
+    if update_customer:
+        billing_customer = order.billing_customer.get_all_attrs()
+        update_customer_to_db(table_objs.get('customer'), session, 
+        billing_customer, id=exist_order[0].billing_customer_id)
+
+        shipping_customer = order.shipping_customer.get_all_attrs()
+        update_customer_to_db(table_objs.get('customer'), session, 
+        shipping_customer, id=exist_order[0].shipping_customer_id)
+
+def update_order_item_to_shop(shop_connector, destination_order_id, order_items:list):
+    items = {}
+    for item in order_items:
+        if item.get('destination_product_id') is None:
+            logger.debug(f'missing destination_product_id {item}')
+            continue
+        items[item['destination_product_id']] = item
+    if len(items) == 0:
+        return 
+    print(items)
+    return shop_connector.update_order_item_at_shop(
+                            destination_order_id,
+                            items)
+
+
 
 def update_customer_to_shop( session, shop_connector, data, 
                     destination_order_id, is_billing=False,is_shipping=False):

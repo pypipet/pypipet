@@ -95,7 +95,8 @@ def parse_product(data: dict, attr_mapping):
             field_mapping(vari, variation, attr_mapping['variation'])
             if variation.get('sku') is None or variation['sku'].strip() == '':
                 variation['sku'] = str(vari['id'])
-            variation['description'] = f"{data['body_html']} - {variation['description']}"
+            # variation['description'] = f"{data['body_html']} - {variation['description']}"
+            variation['title'] = f"{product['product_name']} ({variation['title']})"
             #options: shopfy has max 3 options
             for i in range(1,4):
                 if vari.get(f'option{i}') is not None and i <= len(options):

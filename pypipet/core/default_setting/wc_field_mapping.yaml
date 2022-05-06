@@ -30,6 +30,7 @@ mapping:
       - map_from: total
         map_to: refund
         sum: total
+    customer_note: note
   order_item:
     product_id: 
       map_to: destination_product_id
@@ -70,7 +71,7 @@ mapping:
       map_to: identifier
       data_type: string
     name: product_name
-    short_description: short_description
+    description: short_description
   variation:
     attributes: #[brand, upc, size]
       - map_from: options
@@ -99,7 +100,6 @@ mapping:
     weight: 
       map_to: weight
       data_type: float
-    description: description
     stock_quantity: 
       map_to: in_stock 
       data_type: integer

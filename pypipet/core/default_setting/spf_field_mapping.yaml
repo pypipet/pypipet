@@ -66,8 +66,9 @@ mapping:
       map_to: identifier
       data_type: string
     title: product_name
-    # short_description: short_description
+    body_html: short_description
   variation:
+    title: title
     images: 
       - map_from: src
         map_to: images
@@ -78,7 +79,6 @@ mapping:
     weight: 
       map_to: weight
       data_type: float
-    title: description
     inventory_quantity: 
       map_to: in_stock 
       data_type: integer

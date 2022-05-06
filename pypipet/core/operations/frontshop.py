@@ -1,5 +1,5 @@
 from pypipet.core.sql.query_interface import *
-from pypipet.core.model.product import Destination, Product, Variation
+from pypipet.core.model.product import Destination, Product
 from .utility import get_front_shop_id
 from copy import deepcopy
 
@@ -34,7 +34,7 @@ def load_products_from_shop(table_objs, session, shop_connector,
             break
         
         add_product_to_db_bulk(table_objs, session, 
-                                       shop_connector,res)
+                                shop_connector.front_shop_id,res)
         start_page += 1
         if _DEBUG_ : break
 
@@ -46,16 +46,16 @@ def get_product_from_shop(shop_connector,
     return res
 
 def add_product_to_db_bulk(table_objs, session, 
-                            shop_connector,products:list, currency='USD'):
+                    front_shop_id,products:list, currency='USD',**kwargs):
     for p in products:
         # if _DEBUG_: logger.debug(p)
         if p is None: continue
         add_product_with_variations_to_db(table_objs, session, 
-                            shop_connector, p, currency=currency)
+                            front_shop_id, p, currency=currency, **kwargs)
 
 def add_product_with_variations_to_db(table_objs, session, 
-                            shop_connector,p:dict, currency='USD'):
-    add_product_to_db(table_objs, session, p['product'])
+                            front_shop_id,p:dict, currency='USD',**kwargs):
+    add_product_to_db(table_objs, session, p['product'], **kwargs)
     if p.get('destinations') is None \
                 or len(p['destinations']) == 0: 
         return
@@ -63,12 +63,12 @@ def add_product_with_variations_to_db(table_objs, session,
         #print(p['destinations'])
         add_destination_to_db(table_objs, 
                             session, 
-                            shop_connector.front_shop_id, 
+                            front_shop_id, 
                             dest,
                             currency=currency)
 
 
-def add_product_to_db(table_objs, session, product_info: dict):
+def add_product_to_db(table_objs, session, product_info: dict,**kwargs):
     if product_info is None: return 
     product = Product()
     #check category
@@ -84,35 +84,11 @@ def add_product_to_db(table_objs, session, product_info: dict):
         product_info.update(cat)
         del product_info['category']
     
-    product.set_product(table_objs, product_info)
+    product.set_product(table_objs, product_info, **kwargs)
     
     return add_new_product(table_objs, session, product)
 
 
-# def add_variation_to_db(table_objs, session, product_id: int,  variation_data: dict):
-#     if variation_data.get('sku') is None:
-#         logger.debug(f'missing {sku}')
-#         return None
-
-#     variation  = Variation() 
-#     variation.set_variation(table_objs, variation_data)
-    
-#     #validate non-duplicate sku
-#     exists = search_exist(table_objs.get(variation.__table_name__), 
-#                           session, 
-#                           {'sku': variation.sku})
-#     if len(exists) > 0:
-#         logger.debug(f'duplicate {variation.sku}')
-#         return None
-
-    
-#     variation.set_attr('product_id', product_id)
-
-#     res = add_to_db(table_objs.get(variation.__table_name__), 
-#                      session, 
-#                      variation)
-#     if res is not None:
-#         return variation
 
 
 def add_destination_to_db(table_objs, session, front_shop_id, 
@@ -163,7 +139,7 @@ def is_exist_destination(table_obj, session, dest_data):
 
 
 
-def get_product_info(table_objs, session, shop_connector, identifier=None,
+def get_product_info(table_objs, session, front_shop_id, identifier=None,
                     sku=None, product_id=None, include_published=False,
                     include_category=False, **kwargs):
     params = None
@@ -183,7 +159,7 @@ def get_product_info(table_objs, session, shop_connector, identifier=None,
                      params, 
                      include_published=include_published,
                      include_category=include_category, 
-                     front_shop_id=shop_connector.front_shop_id,
+                     front_shop_id=front_shop_id,
                      schema=kwargs.get('schema', ''))
     return variation_info
 

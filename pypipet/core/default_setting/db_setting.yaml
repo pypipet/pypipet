@@ -48,7 +48,7 @@ db_setting:
         not_null: true
       - name: category_id
         type: integer
-      - name: manufacture
+      - name: manufacture # to remove
         type: string 
         string_len: 250
       index:
@@ -81,12 +81,11 @@ db_setting:
         type: string
         string_len: 50
         is_key: true
-      - name: description
+      - name: description # to remove
+        type: string
+      - name: title # variation title (product name + variation)
         type: string
       - name: upc
-        type: string
-        string_len: 250
-      - name: din
         type: string
         string_len: 250
       - name: size
@@ -110,7 +109,7 @@ db_setting:
       index:
         - cols: [product_id]
           is_unique: false
-
+    
     tax:
       columns:
       - name: id
@@ -364,7 +363,6 @@ db_setting:
         billing_customer_id: customer.id
         shipping_customer_id: customer.id
         front_shop_id: front_shop.id
-        shipping_tax_id: tax.id
       index:
         - cols: [destination_order_id, front_shop_id]
           is_unique: true
@@ -401,7 +399,6 @@ db_setting:
       foreign_key_constraint: 
         shop_order_id: shop_order.id
         destination_id: destination.id
-        tax_id: tax.id
 
     fulfillment:
       columns:

@@ -27,7 +27,7 @@ product_info:
     - upc
     - size
     - weight
-    - description
+    - title
     - color
     - in_stock
     - images
