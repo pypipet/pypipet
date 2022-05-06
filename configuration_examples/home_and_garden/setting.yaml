@@ -14,6 +14,8 @@ project_setting:
   default_brand: 'Brand'
   file_template: bundle/file_template.yaml
   home_dir: ./
+  log_level: debug
+  log_path : ./logs/
   name: project_name
   variation_attrs:
     - color
