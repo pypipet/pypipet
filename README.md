@@ -14,7 +14,7 @@
 * For source code,  visit  [github repository](https://github.com/pypipet/pypipet).
 * For documentation, vist [docs](https://pypipet.com)
 
-## Latest `pip` [version: 1.1.0](https://pypi.org/project/pypipet/)
+## Latest `pip` [version: 1.1.1](https://pypi.org/project/pypipet/)
 
 ### [Change Logs](https://pypi.org/project/changelogs)
 

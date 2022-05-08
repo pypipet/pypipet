@@ -51,19 +51,23 @@ class PipetContext():
                    self.root + 'bundle/file_template.yaml')
         return True
 
-    def initialize_project(self, config_file=None):
+    def initialize_project(self, config_file=None, validate_db=False):
         if self.config is None:
             self.config = read_yml_file(config_file)['project_setting']
-       
+            
+        self.set_log_level(self.config['log_level'], 
+                           path=self.config['log_path'])
+
         if self.db_config is None:
             self.db_config = read_yml_file(
                      self.config['home_dir'] \
                     + self.config['databse_setting'])
-            is_valid, message = validate(self.db_config)
+            if validate_db:
+                is_valid, message = validate(self.db_config)
 
-            if not is_valid:
-                logger.info(message)
-                return 
+                if not is_valid:
+                    logger.info(message)
+                    return 
         
         if self.db_config['db_setting']['db_type'] in  ('postgres'):
             self.schema = self.db_config['db_setting']['db_conn'].get('schema', '')   
@@ -76,8 +80,6 @@ class PipetContext():
             self._session_maker = sessionmaker(bind=self.engine)
             self._initialize_shops()
         
-        self.set_log_level(self.config['log_level'], 
-                           path=self.config['log_path'])
 
     def _initialize_shops(self):
         for shop_name, shop_config in self.config['shops'].items():
@@ -118,7 +120,7 @@ class PipetContext():
         return None
     
     def set_log_level(self, log_level, path='./'):
-        if log_level is None: log_devel = 'info'
+        if log_level is None: log_level = 'info'
         if path is None: path = './'
         self.log_level = log_level
         setup_logging(log_level, log_path=path)
